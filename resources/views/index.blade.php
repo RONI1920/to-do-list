@@ -6,44 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daftar Tugas Ronnie</title>
 
-    {{-- INI BAGIAN PENTING AGAR BISA DICORET --}}
-    <style>
-        /* Mengatur tampilan seluruh halaman agar rapi */
-        body {
-            font-family: sans-serif;
-            margin: 50px;
-        }
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* INI YANG MEMBUAT EFEK CORET */
-        .completed {
-            text-decoration: line-through;
-            /* Coret teks */
-            color: gray;
-            /* Warna jadi abu-abu */
-            font-style: italic;
-            /* Jadi miring */
-        }
-
-        /* Tambahan agar list lebih rapi */
-        li {
-            display: flex;
-            justify-content: space-between;
-            /* Jarak antara teks dan tombol */
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            /* Jarak antar tombol */
-        }
-    </style>
 </head>
 
 <body>
