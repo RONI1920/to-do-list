@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use Illuminate\Support\Facades\Validator;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task; // Pastikan Model Task di-import (sesuaikan jika nama model Anda 'Todo')
@@ -25,6 +27,18 @@ class TaskController extends Controller
     // Fungsi untuk tambah data
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:125'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422); // 422 = Unprocessable Entity
+        }
+
         $task = Task::create([
             'title' => $request->title,
             'is_completed' => false,

@@ -1,36 +1,41 @@
-/* {{-- INI BAGIAN PENTING AGAR BISA DICORET */
-/* Mengatur tampilan seluruh halaman agar rapi */
 body {
-    font-family: sans-serif;
-    margin: 50px;
+    background-color: #f0f2f5;
+    padding-top: 50px;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
-
-.container {
-    max-width: 600px;
-    margin: 0 auto;
+.card {
+    border: none;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
 }
-
-/* INI YANG MEMBUAT EFEK CORET */
-.completed {
-    text-decoration: line-through;
-    /* Coret teks */
-    color: gray;
-    /* Warna jadi abu-abu */
-    font-style: italic;
-    /* Jadi miring */
+.card-header {
+    background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 20px;
 }
-
-/* Tambahan agar list lebih rapi */
-li {
+.task-item {
     display: flex;
     justify-content: space-between;
-    /* Jarak antara teks dan tombol */
-    padding: 10px 0;
-    border-bottom: 1px solid #ddd;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 10px;
+    border-left: 5px solid #0d6efd;
+    transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
-
-.actions {
-    display: flex;
-    gap: 10px;
-    /* Jarak antar tombol */
+.task-item.selesai {
+    border-left-color: #198754;
+    background-color: #f8fff9;
+    opacity: 0.8;
+}
+.task-item.selesai span strong {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+.status-badge {
+    cursor: pointer;
+    user-select: none;
 }
