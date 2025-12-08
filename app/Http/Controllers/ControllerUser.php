@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Symfony\Component\Mime\Message;
 
 // Nama class sebaiknya TaskController agar sesuai dengan fungsinya
@@ -17,18 +17,9 @@ class ControllerUser extends Controller
         return view('index', compact('tasks'));
     }
     // membaca data
-    public function store(Request $request)
+    public function store(StoreTaskRequest $request)
     {
-        $request->validate([
-            'title' => 'required|max:125'
-        ]);
-
-        // create
-        Task::create([
-            'title' => $request->title,
-        ]);
-
-        // PERBAIKAN 2: Perbaiki typo 'succces' menjadi 'success'
+        Task::create($request->validated());
         return redirect()->route('task.index')->with('success', 'Tugas Berhasil Ditambahkan!');
     }
     // udpate

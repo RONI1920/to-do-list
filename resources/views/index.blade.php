@@ -5,12 +5,14 @@
         <div class="card-body">
             <h1 class="card-title mb-4">Daftar Tugas Saya</h1>
 
+            {{-- Form untuk menambahkan tugas --}}
             <form action="{{ route('task.store') }}" method="POST" class="d-flex gap-2 mb-4">
                 @csrf <input type="text" name="title" class="form-control" placeholder="Mau ngerjain apa hari ini?"
                     required>
                 <button type="submit" class="btn btn-primary">Tambah</button>
             </form>
 
+            {{-- MENAMPILKAN List Tugas --}}
             <ul class="list-group">
                 @forelse($tasks as $task)
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -18,6 +20,7 @@
                             {{ $task->title }}
                         </span>
 
+                        {{-- untuk update tugas Batal : Selesai --}}
                         <div class="d-flex gap-2">
                             <form action="{{ route('task.update', $task->id) }}" method="POST">
                                 @csrf
@@ -27,6 +30,7 @@
                                 </button>
                             </form>
 
+                            {{-- untuk hapus List --}}
                             <form action="{{ route('task.destroy', $task->id) }}" method="POST"
                                 onsubmit="return confirm('Yakin hapus?')">
                                 @csrf
