@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\TaskResource;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,14 +14,12 @@ class TaskController extends Controller
     // INI FUNGSI YANG HILANG (Penyebab Error)
     public function index()
     {
-        // Pastikan Anda sudah punya Model 'Task'. 
-        // Jika nama model Anda 'Todo', ganti 'Task' jadi 'Todo'.
         $tasks = Task::all();
 
         return response()->json([
             'status' => true,
-            'message' => 'Daftar semua task',
-            'data' => $tasks
+            'message' => 'Daftar semua task (sudah di format)',
+            'data' => TaskResource::collection($tasks),
         ], 200);
     }
 
@@ -47,7 +46,7 @@ class TaskController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Task berhasil ditambahkan',
-            'data' => $task
+            'data' => new TaskResource($task),
         ], 201);
     }
 
@@ -62,7 +61,7 @@ class TaskController extends Controller
 
         $task->update($request->all());
 
-        return response()->json(['message' => 'Task berhasil diupdate', 'data' => $task], 200);
+        return response()->json(['message' => 'Task berhasil diupdate', 'data' => new TaskResource($task)], 200);
     }
 
     // Fungsi untuk hapus
@@ -76,5 +75,21 @@ class TaskController extends Controller
 
         $task->delete();
         return response()->json(['message' => 'Task berhasil dihapus'], 200);
+    }
+
+
+    public function show($id)
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['message' => 'Data tidak ditemukan'], 404);
+        }
+
+        // Bungkus satu data
+        return response()->json([
+            'status' => true,
+            'data' => new TaskResource($task)
+        ], 200);
     }
 }
