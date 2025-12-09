@@ -1,35 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>To Do List Daily</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aplikasi To-Do List (Full API)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f0f2f5;
+            padding-top: 50px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
 
+        .card {
+            border: none;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+        }
+
+        .card-header {
+            background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #0d6efd;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-item.selesai {
+            border-left-color: #198754;
+            background-color: #f8fff9;
+            opacity: 0.8;
+        }
+
+        .task-item.selesai span strong {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .status-badge {
+            cursor: pointer;
+            user-select: none;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-
-        <div class="container">
-
-            <a href="/" class="navbar-brand"> To-Do List App</a>
-        </div>
-    </nav>
-
+<body>
     <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3 class="mb-0">🚀 Misi Hari Ini</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="input-group mb-4">
+                            <input type="text" id="judulTask" class="form-control form-control-lg"
+                                placeholder="Apa rencana hebatmu?" />
+                            <button class="btn btn-primary" onclick="tambahTask()">
+                                Simpan
+                            </button>
+                        </div>
 
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <div id="loading" class="text-center text-muted py-3">
+                            Sedang memuat data...
+                        </div>
+                        <div id="pesanError" class="alert alert-danger" style="display: none"></div>
+
+                        <ul id="daftarList" class="list-unstyled"></ul>
+                    </div>
+                </div>
             </div>
-        @endif
-        @yield('content')
+        </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const API_URL = "http://127.0.0.1:8000/api/task";
+
+        // 1. GET (Ambil Data)
+        async function ambilData() {
+            try {
+                const response = await fetch(API_URL);
+                const hasil = await response.json();
+
+                const listElement = document.getElementById("daftarList");
+                document.getElementById("loading").style.display = "none";
+                listElement.innerHTML = "";
+
+                // Urutkan: Yang belum selesai di atas
+                const sortedData = hasil.data.sort(
+                    (a, b) => a.status_task - b.status_task
+                );
+
+                sortedData.forEach((task) => {
+                    const isDone =
+                        task.status_task == 1 || task.status_task == true;
+                    const li = document.createElement("li");
+
+                    // Tampilan CSS beda kalau sudah selesai
+                    li.className = `task-item ${isDone ? "selesai" : ""}`;
+
+                    li.innerHTML = `
+                    <span>
+                        <div class="d-block fw-bold" style="font-size: 1.1em">${
+                            task.judul_tugas
+                        }</div>
+
+                        <small class="Text-muted" style="font-size : 0.8rem">${ task . tanggal_buat }</small>
+
+                        <span class="badge ${
+                            isDone ? "bg-success" : "bg-warning text-dark"
+                        } status-badge" 
+                            onclick="updateStatus(${task.id}, ${!isDone})">
+                            ${isDone ? "✅ Selesai" : "⏳ Belum Selesai"} 
+                            (Klik untuk ubah)
+                        </span>
+                    </span>
+                    <button class="btn btn-sm btn-outline-danger" onclick="hapusTask(${
+                        task.id
+                    })">
+                        🗑️
+                    </button>
+                `;
+                    listElement.appendChild(li);
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Gagal koneksi ke API!");
+            }
+        }
+
+        // 2. POST (Tambah Data)
+        async function tambahTask() {
+            const input = document.getElementById("judulTask");
+            const judul = input.value;
+            const errorBox = document.getElementById("pesanError");
+            errorBox.style.display = "none";
+
+            if (!judul) {
+                alert("Judul tidak boleh kosong!");
+                return;
+            }
+
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title: judul
+                }),
+            });
+
+            // Cek Error Validasi (422)
+            if (response.status === 422) {
+                const result = await response.json();
+                errorBox.innerText = result.message || "Validasi Gagal";
+                errorBox.style.display = "block";
+                return;
+            }
+
+            if (response.ok) {
+                input.value = "";
+                ambilData();
+            }
+        }
+
+        // 3. PUT (Update Status Selesai/Belum) - FITUR BARU
+        async function updateStatus(id, statusBaru) {
+            // Tampilkan loading kecil di console
+            console.log(`Mengubah status ID ${id} menjadi ${statusBaru}`);
+
+            await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    is_completed: statusBaru
+                }),
+            });
+
+            ambilData(); // Refresh tampilan
+        }
+
+        // 4. DELETE (Hapus)
+        async function hapusTask(id) {
+            if (!confirm("Yakin hapus tugas ini?")) return;
+
+            await fetch(`${API_URL}/${id}`, {
+                method: "DELETE",
+            });
+
+            ambilData();
+        }
+
+        // Jalankan saat pertama buka
+        ambilData();
+    </script>
 </body>
 
 </html>

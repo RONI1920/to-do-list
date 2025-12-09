@@ -1,19 +1,23 @@
+/* File: public/css/style.css */
 body {
     background-color: #f0f2f5;
     padding-top: 50px;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
+
 .card {
     border: none;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
 }
+
 .card-header {
     background: linear-gradient(45deg, #0d6efd, #0dcaf0);
     color: white;
     border-radius: 15px 15px 0 0 !important;
     padding: 20px;
 }
+
 .task-item {
     display: flex;
     justify-content: space-between;
@@ -26,15 +30,18 @@ body {
     transition: all 0.2s;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
+
 .task-item.selesai {
     border-left-color: #198754;
     background-color: #f8fff9;
     opacity: 0.8;
 }
+
 .task-item.selesai span strong {
     text-decoration: line-through;
     color: #6c757d;
 }
+
 .status-badge {
     cursor: pointer;
     user-select: none;
